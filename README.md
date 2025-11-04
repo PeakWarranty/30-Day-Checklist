@@ -58,11 +58,21 @@
         <form id="parts-form" class="space-y-4">
             
             <div class="space-y-2">
-                <h2 class="text-lg font-semibold text-gray-800">Homeowner & Contact Details</h2>
+                <h2 class="text-lg font-semibold text-gray-800">Contact Details</h2>
+            </div>
+
+            <!-- NEW FIELD: Occupancy Status -->
+            <div class="space-y-2">
+                <label for="occupancy-status" class="block text-sm font-medium text-gray-700">Occupancy Status</label>
+                <select id="occupancy-status" name="occupancy-status" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                    <option value="" disabled selected>Select status</option>
+                    <option value="Owner">Owner</option>
+                    <option value="Renter">Renter</option>
+                </select>
             </div>
 
             <div class="space-y-2">
-                <label for="homeowner-name" class="block text-sm font-medium text-gray-700">Homeowner's Name</label>
+                <label for="homeowner-name" class="block text-sm font-medium text-gray-700">Occupant Name</label>
                 <input type="text" id="homeowner-name" name="homeowner-name" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
             </div>
 
@@ -76,8 +86,9 @@
                 <input type="email" id="contact-email" name="contact-email" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
             </div>
             
+            <!-- MODIFIED FIELD LABEL -->
             <div class="space-y-2">
-                <label for="lot-number" class="block text-sm font-medium text-gray-700">Lot Number</label>
+                <label for="lot-number" class="block text-sm font-medium text-gray-700">Lot Number or Street Address</label>
                 <input type="text" id="lot-number" name="lot-number" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
             </div>
             
@@ -759,12 +770,14 @@
             const checklistContainer = document.getElementById('checklist-container');
             
             // Field references
+            const occupancyStatusInput = document.getElementById('occupancy-status'); 
             const homeownerNameInput = document.getElementById('homeowner-name');
             const contactPhoneInput = document.getElementById('contact-phone');
             const contactEmailInput = document.getElementById('contact-email');
+            const lotNumberInput = document.getElementById('lot-number'); // Get reference to lot-number input
 
 
-            // --- CHECKLIST LOGIC (No changes needed here for photo removal, just keeping it clean) ---
+            // --- CHECKLIST LOGIC ---
             checklistContainer.addEventListener('click', function(event) {
                 const button = event.target.closest('button');
                 if (!button) return;
@@ -923,17 +936,21 @@
                 const finalCommunity = communitySelect.value === 'Other'  
                     ? otherCommunityInput.value 
                     : communitySelect.value;
+                
+                // Determine lot or address value
+                const lotOrAddress = lotNumberInput.value;
 
                 // --- PARAMETERS FOR BOTH EMAILS ---
                 const emailParams = {
                     'to_email': contactEmailInput.value, 
-                    'user-name': 'Homeowner', 
-                    'homeowner-name': homeownerNameInput.value,
+                    'user-name': homeownerNameInput.value, 
+                    'homeowner-name': homeownerNameInput.value, 
+                    'occupancy-status': occupancyStatusInput.value, 
                     'contact-phone': contactPhoneInput.value,
                     'contact-email': contactEmailInput.value,
                     'urgency': 'Medium', 
                     'home-address': finalCommunity,
-                    'lot-number': form.elements['lot-number'].value,
+                    'lot-number': lotOrAddress, // UPDATED PARAMETER VALUE
                     'serial-number': form.elements['serial-number'].value,
                     'home-manufacturer': form.elements['home-manufacturer'].value,
                     'part-description': issuesString, 
